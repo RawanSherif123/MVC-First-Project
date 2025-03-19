@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using MVC03.BLL.Interfaces;
 using MVC03.BLL.Repositories;
 using MVC03.DAL.Data.Contexts;
+using MVC03.PL.Mapping;
+using MVC03.PL.Services;
 
 namespace MVC03.PL
 {
@@ -28,7 +30,13 @@ namespace MVC03.PL
             //builder.Services.AddTransient();
             //builder.Services.AddSingleton();
 
+            //builder.Services.AddAutoMapper(typeof(EmployeeProfile));
+            builder.Services.AddAutoMapper(M => M.AddProfile(new EmployeeProfile()));
 
+
+            builder.Services.AddScoped<IScopedService, ScopedService>();
+            builder.Services.AddScoped<ISingletonService, SingletonService>();
+            builder.Services.AddScoped<ITransentService, TransentService>();
 
             var app = builder.Build();
 
