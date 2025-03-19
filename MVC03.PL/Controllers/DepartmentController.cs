@@ -9,17 +9,19 @@ namespace MVC03.PL.Controllers
 {
     public class DepartmentController : Controller
     {
-        private readonly IDepartmentRepository _deptRepository;
+       // private readonly IDepartmentRepository _deptRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public DepartmentController(IDepartmentRepository departmentRepository)
+        public DepartmentController(/*IDepartmentRepository departmentRepository*/ IUnitOfWork unitOfWork)
         {
-            _deptRepository = departmentRepository;
+          //  _deptRepository = departmentRepository;
+            _unitOfWork = unitOfWork;
         }
 
         [HttpGet]  // GET ://Department//Index
         public IActionResult Index()
         {
-            var departments = _deptRepository.GetAll();
+            var departments = _unitOfWork.departmentRepository.GetAll();
             return View(departments);
         }
 
@@ -41,7 +43,8 @@ namespace MVC03.PL.Controllers
                     Code = model.Code,
                     CreateAt = model.CreateAt
                 };
-                var count = _deptRepository.Add(department);
+                _unitOfWork.departmentRepository.Add(department);
+                var count = _unitOfWork.Complete();
                 if (count > 0)
                 {
                     return RedirectToAction(nameof(Index));
@@ -57,7 +60,7 @@ namespace MVC03.PL.Controllers
         {
             if (id is null) return BadRequest("Invalid Id ");
 
-            var deprtment = _deptRepository.Get(id.Value);
+            var deprtment = _unitOfWork.departmentRepository.Get(id.Value);
 
             if (deprtment == null) return NotFound(new { statusCode = 400, messege = $"Department With Id:{id} is Not Found" });
 
@@ -107,7 +110,7 @@ namespace MVC03.PL.Controllers
         {
             if (ModelState.IsValid) // server side validation
             {
-                var department = _deptRepository.Get(id);
+                var department = _unitOfWork.departmentRepository.Get(id);
 
                 if (department == null) return NotFound(new { statusCode = 400, messege = $"Department With Id:{id} is Not Found" });
 
@@ -115,7 +118,8 @@ namespace MVC03.PL.Controllers
                 department.Code = model.Code;
                 department.CreateAt = model.CreateAt;
 
-                var count = _deptRepository.Update(department);
+                _unitOfWork.departmentRepository.Update(department);
+                var count = _unitOfWork.Complete();
                 if (count > 0)
                 {
                     return RedirectToAction(nameof(Index));
@@ -148,11 +152,12 @@ namespace MVC03.PL.Controllers
         {
             if (ModelState.IsValid) // server side validation
             {
-                var department = _deptRepository.Get(id);
+                var department = _unitOfWork.departmentRepository.Get(id);
 
                 if (department == null) return NotFound(new { statusCode = 400, messege = $"Department With Id:{id} is Not Found" });
 
-                var count = _deptRepository.Delete(department);
+                _unitOfWork.departmentRepository.Delete(department);
+                var count = _unitOfWork.Complete();
                 if (count > 0)
                 {
                     return RedirectToAction(nameof(Index));

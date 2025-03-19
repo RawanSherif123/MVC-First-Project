@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using MVC03.BLL;
 using MVC03.BLL.Interfaces;
 using MVC03.BLL.Repositories;
 using MVC03.DAL.Data.Contexts;
@@ -18,6 +19,7 @@ namespace MVC03.PL
             builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>(); // Allow Dependency Injection for DepartmentRepository 
             builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>(); // Allow Dependency Injection for EmployeeRepository 
 
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             builder.Services.AddDbContext<CompanyDbContext>(options =>
             {

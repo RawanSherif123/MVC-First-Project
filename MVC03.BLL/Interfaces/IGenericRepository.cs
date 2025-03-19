@@ -11,8 +11,8 @@ namespace MVC03.BLL.Interfaces
     {
         IEnumerable<TEntity> GetAll();
         TEntity Get(int id);
-        int Add(TEntity department);
-        int Update(TEntity department);
-        int Delete(TEntity department);
+        void Add(TEntity department);
+        void Update(TEntity department);
+        void Delete(TEntity department);
     }
 }
