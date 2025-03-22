@@ -28,5 +28,6 @@ namespace MVC03.DAL.Models
         public Department? Department { get; set; }
 
         public string? ImageName { get; set; }
+
     }
 }

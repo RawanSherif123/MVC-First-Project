@@ -19,9 +19,9 @@ namespace MVC03.PL.Controllers
         }
 
         [HttpGet]  // GET ://Department//Index
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var departments = _unitOfWork.departmentRepository.GetAll();
+            var departments = await _unitOfWork.departmentRepository.GetAllAsync();
             return View(departments);
         }
 
@@ -33,7 +33,7 @@ namespace MVC03.PL.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(CreateDepartmentDto model)
+        public async Task<IActionResult> Create(CreateDepartmentDto model)
         {
             if (ModelState.IsValid) // server side validation
             {
@@ -43,8 +43,8 @@ namespace MVC03.PL.Controllers
                     Code = model.Code,
                     CreateAt = model.CreateAt
                 };
-                _unitOfWork.departmentRepository.Add(department);
-                var count = _unitOfWork.Complete();
+               await _unitOfWork.departmentRepository.AddAsync(department);
+                var count = await _unitOfWork.CompleteAsync();
                 if (count > 0)
                 {
                     return RedirectToAction(nameof(Index));
@@ -56,11 +56,11 @@ namespace MVC03.PL.Controllers
 
 
         [HttpGet]
-        public IActionResult Details(int? id, string viewname = "Details")
+        public async Task<IActionResult> Details(int? id, string viewname = "Details")
         {
             if (id is null) return BadRequest("Invalid Id ");
 
-            var deprtment = _unitOfWork.departmentRepository.Get(id.Value);
+            var deprtment = await _unitOfWork.departmentRepository.GetAsync(id.Value);
 
             if (deprtment == null) return NotFound(new { statusCode = 400, messege = $"Department With Id:{id} is Not Found" });
 
@@ -70,7 +70,7 @@ namespace MVC03.PL.Controllers
 
 
         [HttpGet]
-        public IActionResult Edit(int? id)
+        public async Task<IActionResult> Edit(int? id)
         {
 
             /*  //if (id is null) return BadRequest("Invalid Id ");
@@ -80,7 +80,7 @@ namespace MVC03.PL.Controllers
               //if (deprtment == null) return NotFound(new { statusCode = 400, messege = $"Department With Id:{id} is Not Found" });
 
               //return View(deprtment);*/
-            return Details(id, "Edit");
+            return await Details(id, "Edit");
         }
 
         //[HttpPost]
@@ -106,11 +106,11 @@ namespace MVC03.PL.Controllers
 
         [HttpPost]    //-----> Another way for Edit 
         [ValidateAntiForgeryToken]
-        public IActionResult Edit([FromRoute] int id, CreateDepartmentDto model)
+        public async Task<IActionResult> Edit([FromRoute] int id, CreateDepartmentDto model)
         {
             if (ModelState.IsValid) // server side validation
             {
-                var department = _unitOfWork.departmentRepository.Get(id);
+                var department = await _unitOfWork.departmentRepository.GetAsync(id);
 
                 if (department == null) return NotFound(new { statusCode = 400, messege = $"Department With Id:{id} is Not Found" });
 
@@ -119,7 +119,7 @@ namespace MVC03.PL.Controllers
                 department.CreateAt = model.CreateAt;
 
                 _unitOfWork.departmentRepository.Update(department);
-                var count = _unitOfWork.Complete();
+                var count = await _unitOfWork.CompleteAsync();
                 if (count > 0)
                 {
                     return RedirectToAction(nameof(Index));
@@ -131,7 +131,7 @@ namespace MVC03.PL.Controllers
 
 
         [HttpGet]
-        public IActionResult Delete(int? id)
+        public async Task<IActionResult> Delete(int? id)
         {
             /*//if (id is null) return BadRequest("Invalid Id ");
 
@@ -140,7 +140,7 @@ namespace MVC03.PL.Controllers
             //if (deprtment == null) return NotFound(new { statusCode = 400, messege = $"Department With Id:{id} is Not Found" });
 */
 
-            return Details(id, "Delete");
+            return await Details(id, "Delete");
         }
 
 
@@ -148,16 +148,16 @@ namespace MVC03.PL.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete([FromRoute] int id, CreateDepartmentDto model)
+        public async Task<IActionResult> Delete([FromRoute] int id, CreateDepartmentDto model)
         {
             if (ModelState.IsValid) // server side validation
             {
-                var department = _unitOfWork.departmentRepository.Get(id);
+                var department = await _unitOfWork.departmentRepository.GetAsync(id);
 
                 if (department == null) return NotFound(new { statusCode = 400, messege = $"Department With Id:{id} is Not Found" });
 
                 _unitOfWork.departmentRepository.Delete(department);
-                var count = _unitOfWork.Complete();
+                var count = await _unitOfWork.CompleteAsync();
                 if (count > 0)
                 {
                     return RedirectToAction(nameof(Index));

@@ -3,8 +3,8 @@
 
 @{
     
-    var Departments = new SelectList(_departmentRepo.GetAll() as IEnumerable<Department>, "Id", "Name");
-  //  var departments = new SelectList(ViewData["departments"] as IEnumerable<Department>, "Id", "Name");
+    var Departments = new SelectList(await _departmentRepo.GetAllAsync() as IEnumerable<Department>, "Id", "Name");
+   // var Departments = new SelectList(ViewData["departments"] as IEnumerable<Department>, "Id", "Name");
 }
 <div class="my-3">
     <label asp-for="Name" class="col-form-label">Name</label>
@@ -73,3 +73,7 @@
     </select>
 </div>
 
+<div class="my-3">
+    <label asp-for="Image" class="col-form-label"></label>
+    <input asp-for="Image" type="file" class="form-control" />
+</div>
