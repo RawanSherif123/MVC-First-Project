@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MVC03.BLL.Interfaces;
 using MVC03.DAL.Models;
 using MVC03.PL.Dtos;
+using MVC03.PL.Helpers;
 
 namespace MVC03.PL.Controllers
 {
@@ -25,16 +26,16 @@ namespace MVC03.PL.Controllers
             // _departmentRepository = departmentRepository;
             _mapper = mapper;
         }
-        public IActionResult Index(string? SearchInput)
+        public async Task<IActionResult> Index(string? SearchInput)
         {
             IEnumerable<Employee> employees;
             if (string.IsNullOrEmpty(SearchInput))
             {
-                employees = _unitOfWork.employeeRepository.GetAll();
+                employees = await _unitOfWork.employeeRepository.GetAllAsync();
             }
             else
             {
-                employees = _unitOfWork.employeeRepository.GetByName(SearchInput);
+                employees =await _unitOfWork.employeeRepository.GetByNameAsync(SearchInput);
             }
 
             //  // ViewData : 
@@ -46,37 +47,37 @@ namespace MVC03.PL.Controllers
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            var departments = _unitOfWork.departmentRepository.GetAll();
+            var departments = await _unitOfWork.departmentRepository.GetAllAsync();
             ViewData["departments"] = departments;
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(EmployeeDto model)
+        public async Task< IActionResult> Create(EmployeeDto model)
         {
             if (ModelState.IsValid)
             {
-                try
+
+
+                if (model.Image is not null)
                 {
-                    
+                   model.ImageName = DocumentSetting.UploadFile(model.Image, "images");
+                }
+                var employee = _mapper.Map<Employee>(model);
 
-                    var employee = _mapper.Map<Employee>(model);
+                   await  _unitOfWork.employeeRepository.AddAsync(employee);
+                   var count = await _unitOfWork.CompleteAsync();
 
-                     _unitOfWork.employeeRepository.Add(employee);
-                   var count = _unitOfWork.Complete();
-                    if (count > 0)
-                    {
-                        TempData["Message "] = " Employee is Created !!";
+                 if (count > 0)
+                 {
+
+                    TempData["Message "] = " Employee is Created !!";
                         return RedirectToAction(nameof(Index));
-                    }
-                }
-                catch (Exception ex)
-                {
-                    ModelState.AddModelError(" ", ex.Message);
-                }
+                 }
+              
             }
 
 
@@ -85,10 +86,10 @@ namespace MVC03.PL.Controllers
 
 
         [HttpGet]
-        public IActionResult Details(int? id, string viewname = "Details")
+        public async Task<IActionResult> Details(int? id, string viewname = "Details")
         {
             if (id is null) return BadRequest("Invalid Id");
-            var employee = _unitOfWork.employeeRepository.Get(id.Value);
+            var employee = await _unitOfWork.employeeRepository.GetAsync(id.Value);
 
             if (employee == null) return NotFound(new { statusCode = 404, messege = $"Employee With Id:{id} is Not Found" });
 
@@ -96,14 +97,14 @@ namespace MVC03.PL.Controllers
         }
 
         [HttpGet]
-        public IActionResult Edit(int? id)
+        public async Task<IActionResult> Edit(int? id)
         {
 
 
             //var departments = _unitOfWork.departmentRepository.GetAll();
             //ViewData["departments"] = departments;
             if (id is null) return BadRequest("Invalid Id");
-            var employee = _unitOfWork.employeeRepository.Get(id.Value);
+            var employee = await _unitOfWork.employeeRepository.GetAsync(id.Value);
 
             if (employee == null) return NotFound(new { statusCode = 404, messege = $"Employee With Id:{id} is Not Found" });
             var dto = _mapper.Map<EmployeeDto>(employee);
@@ -114,11 +115,20 @@ namespace MVC03.PL.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit([FromRoute] int id, Employee model)
+        public async Task<IActionResult> Edit([FromRoute] int id, EmployeeDto model)
         {
             if (ModelState.IsValid)
             {
-                // if (id !=model.Id) return BadRequest();
+                if (model.ImageName is not null && model.Image is not null)
+                {
+                    DocumentSetting.DeleteFile(model.ImageName, "images");
+                }
+
+                 if (model.Image is not null)
+                 {
+                    model.ImageName = DocumentSetting.UploadFile(model.Image, "images");
+
+                 }
 
                 var employee = new Employee()
                 {
@@ -134,11 +144,14 @@ namespace MVC03.PL.Controllers
                     Phone = model.Phone,
                     CreateAt = model.CreateAt,
                     Email = model.Email,
+                    ImageName = model.ImageName,
+                  //  DepartmentId = model.DepartmentId,
+
 
                 };
                 {
                      _unitOfWork.employeeRepository.Update(employee);
-                    var count = _unitOfWork.Complete();
+                    var count = await _unitOfWork.CompleteAsync();
 
 
 
@@ -187,27 +200,32 @@ namespace MVC03.PL.Controllers
 
 
         [HttpGet]
-        public IActionResult Delete(int? id)
+        public async Task<IActionResult> Delete(int? id)
         {
-            return Details(id, "Delete");
+            return await Details(id, "Delete");
         }
 
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete([FromRoute] int id, EmployeeDto model)
+        public async Task<IActionResult> Delete([FromRoute] int id, EmployeeDto model)
         {
             if (ModelState.IsValid)
             {
-                var employee = _unitOfWork.employeeRepository.Get(id);
+                var employee =await _unitOfWork.employeeRepository.GetAsync(id);
 
                 if (employee == null) return NotFound(new { statusCode = 400, messege = $"Employee With Id:{id} is Not Found" });
 
 
                _unitOfWork.employeeRepository.Delete(employee);
-                var count = _unitOfWork.Complete();
+                var count = await _unitOfWork.CompleteAsync();
+
                 if (count > 0)
                 {
+                    if (model.ImageName is not null) 
+                    {
+                        DocumentSetting.DeleteFile(model.ImageName, "images");
+                    }
                     return RedirectToAction(nameof(Index));
                 }
 
