@@ -19,8 +19,6 @@ namespace MVC03.BLL.Repositories
             _context = context;
         }
 
-       
-
         public async Task <List<Employee>> GetByNameAsync(string name)
         {
           return await  _context.Employees.Include(E => E.Department).Where(E => E.Name.ToLower().Contains(name.ToLower())).ToListAsync();
