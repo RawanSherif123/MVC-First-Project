@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MVC03.BLL;
 using MVC03.BLL.Interfaces;
 using MVC03.BLL.Repositories;
 using MVC03.DAL.Data.Contexts;
+using MVC03.DAL.Models;
 using MVC03.PL.Mapping;
 using MVC03.PL.Services;
 
@@ -35,6 +37,8 @@ namespace MVC03.PL
             //builder.Services.AddAutoMapper(typeof(EmployeeProfile));
             builder.Services.AddAutoMapper(M => M.AddProfile(new EmployeeProfile()));
 
+            builder.Services.AddIdentity<AppUser, IdentityRole>()
+                             .AddEntityFrameworkStores<CompanyDbContext>();
 
             builder.Services.AddScoped<IScopedService, ScopedService>();
             builder.Services.AddScoped<ISingletonService, SingletonService>();
