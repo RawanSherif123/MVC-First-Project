@@ -40,6 +40,12 @@ namespace MVC03.PL
             builder.Services.AddIdentity<AppUser, IdentityRole>()
                              .AddEntityFrameworkStores<CompanyDbContext>();
 
+            builder.Services.ConfigureApplicationCookie(config =>
+            {
+                config.LoginPath = "/Account/SignIn";
+                
+            });
+
             builder.Services.AddScoped<IScopedService, ScopedService>();
             builder.Services.AddScoped<ISingletonService, SingletonService>();
             builder.Services.AddScoped<ITransentService, TransentService>();
@@ -59,7 +65,10 @@ namespace MVC03.PL
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
+
+            
 
             app.MapControllerRoute(
                 name: "default",
