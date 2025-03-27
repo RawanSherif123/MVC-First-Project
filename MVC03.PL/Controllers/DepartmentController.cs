@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MVC03.BLL.Interfaces;
 using MVC03.BLL.Repositories;
 using MVC03.DAL.Models;
@@ -7,6 +8,7 @@ using MVC03.PL.Dtos;
 
 namespace MVC03.PL.Controllers
 {
+    [Authorize]
     public class DepartmentController : Controller
     {
        // private readonly IDepartmentRepository _deptRepository;

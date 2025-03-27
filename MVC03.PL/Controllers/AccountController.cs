@@ -8,10 +8,12 @@ namespace MVC03.PL.Controllers
     public class AccountController : Controller
     {
         private readonly UserManager<AppUser> _userManager;
+        private readonly SignInManager<AppUser> _signInManager;
 
-        public AccountController(UserManager<AppUser> userManager)
+        public AccountController(UserManager<AppUser> userManager , SignInManager<AppUser> signInManager)
         {
             _userManager = userManager;
+            _signInManager = signInManager;
         }
 
 
@@ -66,9 +68,49 @@ namespace MVC03.PL.Controllers
 
         #region SignIn
 
+        [HttpGet]
+
+        public IActionResult SignIn() 
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SignIn(SignInDto model)
+        {
+            if (ModelState.IsValid) 
+            {
+              var user = await  _userManager.FindByEmailAsync(model.Email);
+                if (user is not null )
+                {
+                    var flage = await  _userManager.CheckPasswordAsync(user, model.Password);
+                    if (flage) 
+                    {
+                      var result = await  _signInManager.PasswordSignInAsync(user,model.Password,model.RememberMe,false);
+                        if (result.Succeeded)
+                        {
+                            return RedirectToAction(nameof(HomeController.Index), "Home");
+
+                        }
+                    }
+                }
+
+                ModelState.AddModelError("", "Invalid Login");
+            }
+            return View(model);
+        }
+
         #endregion
 
         #region SignOut
+
+
+        [HttpGet]
+        public new async Task<IActionResult> SignOut() 
+        {
+           await  _signInManager.SignOutAsync();
+            return RedirectToAction(nameof(SignIn));
+        }
 
         #endregion
     }
