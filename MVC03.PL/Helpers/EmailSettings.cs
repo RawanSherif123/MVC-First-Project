@@ -12,8 +12,9 @@ namespace MVC03.PL.Helpers
             {
                 var client = new SmtpClient("smtp.gmail.com", 587);
                 client.EnableSsl = true;
-                client.Credentials = new NetworkCredential("sherifrawan09@gmail.com", "muvfggggggdxd");
+                client.Credentials = new NetworkCredential("sherifrawan09@gmail.com", "ojumeqqajeisxmri");
                 client.Send("sherifrawan09@gmail.com", email.To, email.Subject, email.Body);
+                //ojumeqqajeisxmri
                 return true;
             }
             catch (Exception e)
