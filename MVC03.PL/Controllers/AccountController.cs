@@ -17,6 +17,8 @@ namespace MVC03.PL.Controllers
             _signInManager = signInManager;
         }
 
+        
+
 
         #region SignUp
 
@@ -200,6 +202,10 @@ namespace MVC03.PL.Controllers
 
         #endregion
 
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
 
     }
 }
