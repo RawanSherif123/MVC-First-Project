@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Data;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MVC03.BLL.Interfaces;
@@ -48,6 +49,8 @@ namespace MVC03.PL.Controllers
             return View(employees);
         }
 
+
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> Create()
         {
@@ -56,6 +59,7 @@ namespace MVC03.PL.Controllers
             return View();
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task< IActionResult> Create(EmployeeDto model)
@@ -86,7 +90,7 @@ namespace MVC03.PL.Controllers
             return View(model);
         }
 
-
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> Details(int? id, string viewname = "Details")
         {
@@ -98,6 +102,7 @@ namespace MVC03.PL.Controllers
             return View(employee);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -114,7 +119,7 @@ namespace MVC03.PL.Controllers
             return View(dto);
         }
 
-
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit([FromRoute] int id, EmployeeDto model)
@@ -147,7 +152,7 @@ namespace MVC03.PL.Controllers
                     CreateAt = model.CreateAt,
                     Email = model.Email,
                     ImageName = model.ImageName,
-                  //  DepartmentId = model.DepartmentId,
+                    DepartmentId = model.DepartmentId,
 
 
                 };
@@ -200,14 +205,14 @@ namespace MVC03.PL.Controllers
         //    return View(model);
         //}
 
-
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> Delete(int? id)
         {
             return await Details(id, "Delete");
         }
 
-
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete([FromRoute] int id, EmployeeDto model)

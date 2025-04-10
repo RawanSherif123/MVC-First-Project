@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MVC03.DAL.Models;
 using MVC03.PL.Dtos;
@@ -6,6 +7,7 @@ using MVC03.PL.Helpers;
 
 namespace MVC03.PL.Controllers
 {
+    [Authorize]
     public class UserController : Controller
     {
         private readonly UserManager<AppUser> _userManager;
@@ -16,6 +18,7 @@ namespace MVC03.PL.Controllers
         }
 
 
+       
         [HttpGet]
         public async Task<IActionResult> Index(string? SearchInput)
         {
@@ -54,6 +57,7 @@ namespace MVC03.PL.Controllers
         }
 
 
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(string? id, string viewname = "Details")
         {
             if (id is null) return BadRequest("Invalid Id");
@@ -73,6 +77,7 @@ namespace MVC03.PL.Controllers
             return View(viewname,dto);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> Edit(string? id)
         {
@@ -82,7 +87,7 @@ namespace MVC03.PL.Controllers
           
         }
 
-
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit([FromRoute] string id, UserToReturnDto model)
@@ -108,14 +113,14 @@ namespace MVC03.PL.Controllers
         }
 
 
-       
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> Delete(string? id)
         {
             return await Details(id, "Delete");
         }
 
-
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete([FromRoute] string id, UserToReturnDto model)

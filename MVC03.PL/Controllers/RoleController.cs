@@ -1,4 +1,6 @@
 ﻿using System.Data;
+using Humanizer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -6,6 +8,7 @@ using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.General;
 using MVC03.DAL.Models;
 using MVC03.PL.Dtos;
 using MVC03.PL.Helpers;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace MVC03.PL.Controllers
 {
@@ -19,7 +22,6 @@ namespace MVC03.PL.Controllers
             _roleManager = roleManager;
             _userManager = userManager;
         }
-
 
         [HttpGet]
         public async Task<IActionResult> Index(string? SearchInput)
@@ -50,7 +52,7 @@ namespace MVC03.PL.Controllers
             return View(roles);
         }
 
-
+       
         [HttpGet]
         public async Task<IActionResult> Create()
         {
@@ -58,6 +60,7 @@ namespace MVC03.PL.Controllers
             return View();
         }
 
+    
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(RoleToReturnDto model)
@@ -87,6 +90,7 @@ namespace MVC03.PL.Controllers
 
 
 
+      
         public async Task<IActionResult> Details(string? id, string viewname = "Details")
         {
             if (id is null) return BadRequest("Invalid Id");
@@ -102,6 +106,7 @@ namespace MVC03.PL.Controllers
             return View(viewname, dto);
         }
 
+        
         [HttpGet]
         public async Task<IActionResult> Edit(string? id)
         {
@@ -110,7 +115,6 @@ namespace MVC03.PL.Controllers
             return await Details(id, "Edit");
 
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -140,14 +144,14 @@ namespace MVC03.PL.Controllers
         }
 
 
-
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> Delete(string? id)
         {
             return await Details(id, "Delete");
         }
 
-
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete([FromRoute] string id, RoleToReturnDto model)
@@ -172,13 +176,16 @@ namespace MVC03.PL.Controllers
             return View(model);
         }
 
-
+      
         [HttpGet]
         public async Task<IActionResult> AddOrRemoveUsers(string roleId)
         {
             var role =  await _roleManager.FindByIdAsync(roleId);
             if (role is null)
                 return NotFound ();
+
+             ViewData["RoleId"] = roleId;
+
             var usersInRole = new List<UsersInRoleDto> ();
             var users = await _userManager.Users.ToListAsync();
 
@@ -205,6 +212,7 @@ namespace MVC03.PL.Controllers
             
         }
 
+       
         [HttpPost]
         public async Task<IActionResult> AddOrRemoveUsers(string roleId , List<UsersInRoleDto> users)
         {
@@ -212,7 +220,7 @@ namespace MVC03.PL.Controllers
             if (role is null)
                 return NotFound();
 
-          //  ViewData["RoleId"] = roleId;
+         
 
             if (ModelState.IsValid) 
             { 

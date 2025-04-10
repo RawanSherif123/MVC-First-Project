@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MVC03.BLL.Interfaces;
 using MVC03.BLL.Repositories;
@@ -20,6 +21,7 @@ namespace MVC03.PL.Controllers
             _unitOfWork = unitOfWork;
         }
 
+       
         [HttpGet]  // GET ://Department//Index
         public async Task<IActionResult> Index()
         {
@@ -27,12 +29,14 @@ namespace MVC03.PL.Controllers
             return View(departments);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateDepartmentDto model)
@@ -56,7 +60,7 @@ namespace MVC03.PL.Controllers
             return View(model);
         }
 
-
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> Details(int? id, string viewname = "Details")
         {
@@ -69,8 +73,7 @@ namespace MVC03.PL.Controllers
             return View(viewname, deprtment);
         }
 
-
-
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -105,7 +108,7 @@ namespace MVC03.PL.Controllers
         //    return View(department);
         //}
 
-
+        [Authorize(Roles = "Admin")]
         [HttpPost]    //-----> Another way for Edit 
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit([FromRoute] int id, CreateDepartmentDto model)
@@ -131,7 +134,7 @@ namespace MVC03.PL.Controllers
             return View(model);
         }
 
-
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -146,8 +149,7 @@ namespace MVC03.PL.Controllers
         }
 
 
-
-
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete([FromRoute] int id, CreateDepartmentDto model)
